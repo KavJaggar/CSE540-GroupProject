@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 /// @title SupplyChainProvenance (Draft/ Not Final)
 /// @notice Blockchain-based product tracking for the CSE540 project.
 
-contract SupplyChainProvenance {
+contract SupplyChain {
 
     //This enum lists all of the different possible status tags that a product can have at any point along the supply chain
     enum Status { Unknown, Ordered, Shipped, InStorage, Delivered }

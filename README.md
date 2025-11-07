@@ -14,4 +14,14 @@ This project implements a blockchain-based supply chain provenance system using 
     - npx hardhat compile
 - If the last setp (npx hardhat install) works without error, then all of the needed dependencies should be installed and setup as needed now.
 
-## How to deploy:
+## How to deploy (TO CHANGE AS PROJECT DEVELOPMENT CONTINUES):
+- Start a local test blockchain by running:
+    - npx hardhat node
+- Open a new terminal instance and run:
+    - npx hardhat run scripts/deploy.js --network localhost
+- You should now see: SupplyChain deployed to: 0x.....
+- Then Run:
+    - npx hardhat console --network localhost
+- You should now be able to interact with it in the console!
+
+(TO CHANGE AS PROJECT DEVELOPMENT CONTINUES)
