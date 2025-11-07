@@ -30,6 +30,9 @@ interface ISupplyChain {
     //function allowing only the admin to assign people as retailers
     function setRetailer(address _addr, bool _ok) external;
 
+    //function allowing only the admin to assign people as certifiers
+    function setCertifier(address _addr, bool _ok) external;
+
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters
     //and then returns the id of the product that was just registered
     function registerProduct(string calldata batchId, string calldata metadataUri) external returns (uint256);
@@ -44,6 +47,10 @@ interface ISupplyChain {
 
     //returns a product given a product id. can be called by anyone with access.
     function getProduct(uint256 id) external view returns (Product memory);
+
+    //returns a boolean value letting the user know if the product was able to be certified as owned by them or not. only callable by the certifier role. can later be modified
+    //to actually store a certificate code of some sort on-chain
+    function certifyProduct(uint256 id, address owner) external view returns (bool);
 
 
 }

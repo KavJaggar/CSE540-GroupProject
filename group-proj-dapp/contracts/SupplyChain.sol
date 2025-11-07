@@ -24,11 +24,13 @@ contract SupplyChain is ISupplyChain{
     uint256 private nextId = 1;
 
     //Creates mappings for all of the products so that they can be easily retrieved. Also creates mappings for holding the role assignments of
-    //manufacturers, distributors, and retailers(usually only 1)
+    //manufacturers, distributors, and retailers(usually only 1). Also includes a mapping for certifiers who are responsible for providing certificates/ validation
+    //that an item is actually present on the blockchain
     mapping(uint256 => Product) public products;
     mapping(address => bool) public manufacturer;
     mapping(address => bool) public distributors;
     mapping(address => bool) public retailers;
+    mapping(address => bool) public certifiers;
 
     //variable to store the address of the admin which is just set to msg.sender in the constructor later
     address public admin;
@@ -51,6 +53,12 @@ contract SupplyChain is ISupplyChain{
         _;
     }
 
+    //creates a modifier for functions only meant to be ran by certifiers
+    modifier onlyCertifier() {
+        require(certifiers[msg.sender], "Only certifier");
+        _;
+    }
+
     //this constructor sets the deployer of the contract to the admin when it is first deployed. gives us permission as the admin when we deploy.
     constructor() {
         admin = msg.sender;
@@ -69,6 +77,11 @@ contract SupplyChain is ISupplyChain{
     //function allowing only the admin to assign people as retailers
     function setRetailer(address _addr, bool _ok) external onlyAdmin {
         retailers[_addr] = _ok;
+    }
+
+    //function allowing only the admin to assign people as certifiers
+    function setCertifier(address _addr, bool _ok) external onlyAdmin {
+        certifiers[_addr] = _ok;
     }
 
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters
@@ -114,5 +127,19 @@ contract SupplyChain is ISupplyChain{
     //returns a product given a product id. can be called by anyone with access.
     function getProduct(uint256 id) external view returns (Product memory) {
         return products[id];
+    }
+
+    //returns a boolean value letting the user know if the product was able to be certified as owned by them or not. only callable by the certifier role. can later be modified
+    //to actually store a certificate code of some sort on-chain
+    function certifyProduct(uint256 id, address owner) external onlyCertifier view returns (bool){
+        Product storage p = products[id];
+        if (p.id == id && p.owner == owner)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
