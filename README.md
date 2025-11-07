@@ -24,4 +24,8 @@ This project implements a blockchain-based supply chain provenance system using 
     - npx hardhat console --network localhost
 - You should now be able to interact with it in the console!
 
-(TO CHANGE AS PROJECT DEVELOPMENT CONTINUES)
+## For grader:
+The contract interface and draft contract with some implemented function code is avalable in:
+- group-project-dapp/contracts/ISupplyChain.sol
+- group-project-dapp/contracts/SupplyChain.sol
+
