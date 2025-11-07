@@ -79,9 +79,14 @@ contract SupplyChain is ISupplyChain{
         retailers[_addr] = _ok;
     }
 
-    //function allowing only the admin to assign people as certifiers
+    //function allowing only the admin to assign people as certifiers. certifiers/ regulators must have the ability to access all data on the chain, so they 
+    //must be added to every role in addition to the certifier one. often times, the admin also must be a certifier.
     function setCertifier(address _addr, bool _ok) external onlyAdmin {
         certifiers[_addr] = _ok;
+        manufacturer[_addr] = _ok;
+        distributors[_addr] = _ok;
+        retailers[_addr] = _ok;
+        
     }
 
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters

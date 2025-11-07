@@ -30,7 +30,8 @@ interface ISupplyChain {
     //function allowing only the admin to assign people as retailers
     function setRetailer(address _addr, bool _ok) external;
 
-    //function allowing only the admin to assign people as certifiers
+    //function allowing only the admin to assign people as certifiers. certifiers/ regulators must have the ability to access all data on the chain, so they 
+    //must be added to every role in addition to the certifier one. often times, the admin also must be a certifier.
     function setCertifier(address _addr, bool _ok) external;
 
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters
@@ -49,7 +50,7 @@ interface ISupplyChain {
     function getProduct(uint256 id) external view returns (Product memory);
 
     //returns a boolean value letting the user know if the product was able to be certified as owned by them or not. only callable by the certifier role. can later be modified
-    //to actually store a certificate code of some sort on-chain
+    //to actually store a certificate code of some sort on-chain. 
     function certifyProduct(uint256 id, address owner) external view returns (bool);
 
 
