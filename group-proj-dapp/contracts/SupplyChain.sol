@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ISupplyChain.sol";
+//import "./ISupplyChain.sol";
 
 /// @title SupplyChainProvenance (Draft/ Not Final)
 /// @notice Blockchain-based product tracking for the CSE540 project.
 
-contract SupplyChain is ISupplyChain{
+contract SupplyChain{
 
     //This enum lists all of the different possible status tags that a product can have at any point along the supply chain
-    //enum Status { Unknown, Ordered, Shipped, InStorage, Delivered } 
+    enum Status { Unknown, Ordered, Shipped, InStorage, Delivered } 
 
     //Product struct storing all of the different notable attributes of a product while in the supply chain
-    // struct Product {
-    //     uint256 id;
-    //     address owner;
-    //     string batchId;
-    //     string metadataUri;
-    //     Status status;
-    //     uint256 createdAt;
-    // }
+    struct Product {
+        uint256 id;
+        address owner;
+        string batchId;
+        string metadataUri;
+        Status status;
+        uint256 createdAt;
+    }
     //Creates a counter variable to assign new product ids by just incrementing up by 1 after the assignment
     uint256 private nextId = 1;
 
@@ -35,11 +35,14 @@ contract SupplyChain is ISupplyChain{
     //variable to store the address of the admin which is just set to msg.sender in the constructor later
     address public admin;
 
+    //test variable
+    uint256 public test = 1;
+
     //sets up the three events that will be emitted. one for a product being created. one for the ownership of a product being transferred to someone else along
     //the supply chain. and one for the status of the product being updated to one in the status enum declared above.
-    // event ProductCreated(uint256 indexed id, address indexed owner, string batchId);
-    // event OwnershipTransferred(uint256 indexed id, address indexed from, address indexed to);
-    // event StatusUpdated(uint256 indexed id, Status status);
+    event ProductCreated(uint256 indexed id, address indexed owner, string batchId);
+    event OwnershipTransferred(uint256 indexed id, address indexed from, address indexed to);
+    event StatusUpdated(uint256 indexed id, Status status);
 
     //creates a modifier to use for functions only meant to be ran by the admin
     modifier onlyAdmin() {
