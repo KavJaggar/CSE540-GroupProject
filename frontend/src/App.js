@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { getContract } from "./utils//contract.js";
+import { getContract } from "./utils/contract.js";
+import RegisterProductModal from "./components/registerproductmodal.js";
 
 function App() {
   const [status, setStatus] = useState("");
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   async function getAdmin() {
     try {
@@ -15,23 +17,28 @@ function App() {
     }
   }
 
-  async function registerProduct() {
+  const handleRegisterProduct = async (data) => {
     try {
       const contract = await getContract();
-      const tx = await contract.registerProduct("batch001", "ipfs://metadataURI");
-      await tx.wait(); // Wait for transaction to be mined
-      setStatus("Product registered successfully!");
+
+      const tx = await contract.registerProduct(
+        data.batchID,   // <-- FIXED
+        data.metadata   // <-- FIXED
+      );
+
+      await tx.wait();
+      alert("Product registered!");
     } catch (err) {
       console.error(err);
-      setStatus("Error registering product: " + err.message);
+      alert("Failed to register product");
     }
-  }
+  };
 
   async function assignManufacturer() {
     try {
       const contract = await getContract();
       const tx = await contract.setManufacturer(contract.admin(), true);
-      await tx.wait(); // Wait for transaction to be mined
+      await tx.wait();
       setStatus("Manufacturer registered successfully!");
     } catch (err) {
       console.error(err);
@@ -55,15 +62,26 @@ function App() {
       <h1>Supply Chain DApp</h1>
 
       <button onClick={getAdmin}>Get Contract Admin</button>
-      <button onClick={registerProduct} style={{ marginLeft: "10px" }}>
+
+      {/* OPEN MODAL HERE */}
+      <button onClick={() => setShowRegisterModal(true)} style={{ marginLeft: "10px" }}>
         Register Product
       </button>
+
       <button onClick={assignManufacturer} style={{ marginLeft: "10px" }}>
         Assign Manufacturer
       </button>
+
       <button onClick={getProduct} style={{ marginLeft: "10px" }}>
         Get Product
       </button>
+
+      {/* Register Product Modal */}
+      <RegisterProductModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onSubmit={handleRegisterProduct}
+      />
 
       <p>{status}</p>
     </div>
