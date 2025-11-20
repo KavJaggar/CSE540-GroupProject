@@ -5,6 +5,7 @@ import GetProductModal from "./components/getproductmodal.js";
 import AssignManufacturerModal from "./components/assignmanufacturermodal.js";
 import AssignDistributorModal from "./components/assigndistributormodal.js";
 import AssignCertifierModal from "./components/assigncertifiermodal.js";
+import TransferOwnershipModal from "./components/transferownershipmodal.js";
 
 
 function App() {
@@ -14,9 +15,7 @@ function App() {
   const [showassignManufacturerModal, setShowAssignManufacturerModal] = useState(false);
   const [showassignDistributorModal, setShowAssignDistributorModal] = useState(false);
   const [showassignCertifierModal, setShowAssignCertifierModal] = useState(false);
-
-
-
+  const [showtransferOwnershipModal, setShowtransferOwnershipModal] = useState(false);
 
   async function getAdmin() {
     try {
@@ -134,6 +133,21 @@ function App() {
     }
   };
 
+  const handletransferOwnership = async (data) => {
+    try {
+      const contract = await getContract();
+
+        const tx = await contract.transferOwnership(
+        data.productID, data.address  
+        );
+      
+      alert("Ownership of Product updated to " + data.address + "!")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to transfer ownership. Make sure you own the product you are trying to transfer.");
+    }
+  };
+
 
   // async function assignManufacturer() {
   //   try {
@@ -180,6 +194,10 @@ function App() {
         Assign Certifier
       </button>
 
+      <button onClick={() => setShowtransferOwnershipModal(true)} style={{ marginLeft: "10px" }}>
+        Transfer Product Ownership
+      </button>
+
       <button onClick={() => setShowGetModal(true)} style={{ marginLeft: "10px" }}>
         Get Product
       </button>
@@ -217,6 +235,13 @@ function App() {
         isOpen={showassignCertifierModal}
         onClose={() => setShowAssignCertifierModal(false)}
         onSubmit={handleAssignCertifier}
+      />
+
+      {/* Transfer Ownership Modal */}
+      <TransferOwnershipModal
+        isOpen={showtransferOwnershipModal}
+        onClose={() => setShowtransferOwnershipModal(false)}
+        onSubmit={handletransferOwnership}
       />
 
       <p>{status}</p>
