@@ -35,7 +35,7 @@ function App() {
       alert("Product registered!");
     } catch (err) {
       console.error(err);
-      alert("Failed to register product");
+      alert("Failed to register product : Only Manufacturers can resgiter products!");
     }
   };
 
@@ -51,7 +51,7 @@ function App() {
       alert("Product retrieved!\n Product: " + tx);
     } catch (err) {
       console.error(err);
-      alert("Failed to get product");
+      alert("Failed to get product : " + err);
     }
   };
 
