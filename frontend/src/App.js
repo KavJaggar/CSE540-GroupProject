@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { getContract } from "./utils/contract.js";
 import RegisterProductModal from "./components/registerproductmodal.js";
+import GetProductModal from "./components/getproductmodal.js";
 
 function App() {
   const [status, setStatus] = useState("");
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showGetModal, setShowGetModal] = useState(false);
+
 
   async function getAdmin() {
     try {
@@ -22,8 +25,8 @@ function App() {
       const contract = await getContract();
 
       const tx = await contract.registerProduct(
-        data.batchID,   // <-- FIXED
-        data.metadata   // <-- FIXED
+        data.batchID,  
+        data.metadata   
       );
 
       await tx.wait();
@@ -31,6 +34,22 @@ function App() {
     } catch (err) {
       console.error(err);
       alert("Failed to register product");
+    }
+  };
+
+  const handleGetProduct = async (data) => {
+    try {
+      const contract = await getContract();
+
+      const tx = await contract.getProduct(
+        data.productID  
+      );
+
+      //await tx.wait();
+      alert("Product retrieved!\n Product: " + tx);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to get product");
     }
   };
 
@@ -63,7 +82,6 @@ function App() {
 
       <button onClick={getAdmin}>Get Contract Admin</button>
 
-      {/* OPEN MODAL HERE */}
       <button onClick={() => setShowRegisterModal(true)} style={{ marginLeft: "10px" }}>
         Register Product
       </button>
@@ -72,7 +90,7 @@ function App() {
         Assign Manufacturer
       </button>
 
-      <button onClick={getProduct} style={{ marginLeft: "10px" }}>
+      <button onClick={() => setShowGetModal(true)} style={{ marginLeft: "10px" }}>
         Get Product
       </button>
 
@@ -81,6 +99,13 @@ function App() {
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
         onSubmit={handleRegisterProduct}
+      />
+
+      {/* Get Product Modal */}
+      <GetProductModal
+        isOpen={showGetModal}
+        onClose={() => setShowGetModal(false)}
+        onSubmit={handleGetProduct}
       />
 
       <p>{status}</p>
