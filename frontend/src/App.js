@@ -3,12 +3,19 @@ import { getContract } from "./utils/contract.js";
 import RegisterProductModal from "./components/registerproductmodal.js";
 import GetProductModal from "./components/getproductmodal.js";
 import AssignManufacturerModal from "./components/assignmanufacturermodal.js";
+import AssignDistributorModal from "./components/assigndistributormodal.js";
+import AssignCertifierModal from "./components/assigncertifiermodal.js";
+
 
 function App() {
   const [status, setStatus] = useState("");
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showGetModal, setShowGetModal] = useState(false);
   const [showassignManufacturerModal, setShowAssignManufacturerModal] = useState(false);
+  const [showassignDistributorModal, setShowAssignDistributorModal] = useState(false);
+  const [showassignCertifierModal, setShowAssignCertifierModal] = useState(false);
+
+
 
 
   async function getAdmin() {
@@ -72,12 +79,61 @@ function App() {
         );
       }
       
-      alert("Manufacturer Set for " + data.address + "!")
+      alert("Manufacturer Status updated for " + data.address + "!")
     } catch (err) {
       console.error(err);
       alert("Failed to get product");
     }
   };
+
+  const handleAssignDistributor = async (data) => {
+    try {
+      const contract = await getContract();
+
+      if (data.mode == "add")
+      {
+          const tx = await contract.setDistributor(
+          data.address, true  
+        );
+      }
+      else
+      {
+          const tx = await contract.setManufacturer(
+          data.address, false  
+        );
+      }
+      
+      alert("Distributor Status updated for " + data.address + "!")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to get product");
+    }
+  };
+
+  const handleAssignCertifier = async (data) => {
+    try {
+      const contract = await getContract();
+
+      if (data.mode == "add")
+      {
+          const tx = await contract.setCertifier(
+          data.address, true  
+        );
+      }
+      else
+      {
+          const tx = await contract.setCertifier(
+          data.address, false  
+        );
+      }
+      
+      alert("Certifier Status updated for " + data.address + "!")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to get product");
+    }
+  };
+
 
   // async function assignManufacturer() {
   //   try {
@@ -116,6 +172,14 @@ function App() {
         Assign Manufacturer
       </button>
 
+      <button onClick={() => setShowAssignDistributorModal(true)} style={{ marginLeft: "10px" }}>
+        Assign Distributor
+      </button>
+
+      <button onClick={() => setShowAssignCertifierModal(true)} style={{ marginLeft: "10px" }}>
+        Assign Certifier
+      </button>
+
       <button onClick={() => setShowGetModal(true)} style={{ marginLeft: "10px" }}>
         Get Product
       </button>
@@ -139,6 +203,20 @@ function App() {
         isOpen={showassignManufacturerModal}
         onClose={() => setShowAssignManufacturerModal(false)}
         onSubmit={handleAssignManufacturer}
+      />
+
+      {/* Assign Distributor Modal */}
+      <AssignDistributorModal
+        isOpen={showassignDistributorModal}
+        onClose={() => setShowAssignDistributorModal(false)}
+        onSubmit={handleAssignDistributor}
+      />
+
+      {/* Assign Certifier Modal */}
+      <AssignCertifierModal
+        isOpen={showassignCertifierModal}
+        onClose={() => setShowAssignCertifierModal(false)}
+        onSubmit={handleAssignCertifier}
       />
 
       <p>{status}</p>
