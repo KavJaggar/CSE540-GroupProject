@@ -6,6 +6,8 @@ import AssignManufacturerModal from "./components/assignmanufacturermodal.js";
 import AssignDistributorModal from "./components/assigndistributormodal.js";
 import AssignCertifierModal from "./components/assigncertifiermodal.js";
 import TransferOwnershipModal from "./components/transferownershipmodal.js";
+import UpdateStatusModal from "./components/updatestatusmodal.js";
+import CertifyProductModal from "./components/certifyproductmodal.js";
 
 
 function App() {
@@ -16,6 +18,24 @@ function App() {
   const [showassignDistributorModal, setShowAssignDistributorModal] = useState(false);
   const [showassignCertifierModal, setShowAssignCertifierModal] = useState(false);
   const [showtransferOwnershipModal, setShowtransferOwnershipModal] = useState(false);
+  const [showupdateStatusModal, setShowupdateStatusModal] = useState(false);
+  const [showCertifyModal, setShowCertifyModal] = useState(false);
+
+  const [role, setRole] = useState("");
+
+  const statusTags = {"Unknown" : 1, "Ordered" : 2, "Shipped" : 3, "InStorage" : 4, "Delivered" : 5}
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const adminBtn = document.getElementById("adminButton");
+    const manufacturerBtn = document.getElementById("manufacturerButton");
+    const distributorBtn = document.getElementById("distributorButton");
+    const certifierBtn = document.getElementById("certifierButton");
+
+    adminBtn.onclick = () => setRole("admin");
+    manufacturerBtn.onclick = () => setRole("manufacturer");
+    distributorBtn.onclick = () => setRole("distributor");
+    certifierBtn.onclick = () => setRole("certifier");
+});
 
   async function getAdmin() {
     try {
@@ -148,6 +168,36 @@ function App() {
     }
   };
 
+  const handleupdateStatus = async (data) => {
+    try {
+      const contract = await getContract();
+
+        const tx = await contract.updateStatus(
+        data.productID, statusTags[data.status]
+        );
+      
+      alert("Status of Product updated to " + data.status + "!")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to Update Status. Make sure you own the product you are trying to update. : " + err);
+    }
+  };
+
+  const handleCertify = async (data) => {
+    try {
+      const contract = await getContract();
+
+        const tx = await contract.certifyProduct(
+        data.productID, data.address
+        );
+      
+      alert("Ownership of the product on the chain is verified to belong to: " + data.address + "!")
+    } catch (err) {
+      console.error(err);
+      alert("Failed to verify ownership of Product to address: " + data.address);
+    }
+  };
+
 
   // async function assignManufacturer() {
   //   try {
@@ -174,31 +224,62 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Supply Chain DApp</h1>
 
-      <button onClick={getAdmin}>Get Contract Admin</button>
+      <div className="button-container">
+        <button className="slide-button" style={{ animationDelay: "0s" }} onClick={() => setRole("admin")}>
+          Admin
+        </button>
+        <button className="slide-button" style={{ animationDelay: "0.2s" }} onClick={() => setRole("manufacturer")}>
+          Manufacturer
+        </button>
+        <button className="slide-button" style={{ animationDelay: "0.4s" }} onClick={() => setRole("distributor")}>
+          Distributor
+        </button>
+        <button className="slide-button" style={{ animationDelay: "0.6s" }} onClick={() => setRole("certifier")}>
+          Certifier
+        </button>
+      </div>
 
-      <button onClick={() => setShowRegisterModal(true)} style={{ marginLeft: "10px" }}>
-        Register Product
-      </button>
 
-      <button onClick={() => setShowAssignManufacturerModal(true)} style={{ marginLeft: "10px" }}>
-        Assign Manufacturer
-      </button>
+      <button id = "gcaBtn" className="action-button" style={{ animationDelay: "0s" }} onClick={getAdmin}>Get Contract Admin</button>
 
-      <button onClick={() => setShowAssignDistributorModal(true)} style={{ marginLeft: "10px" }}>
-        Assign Distributor
-      </button>
+      {role === "admin" && (
+        <>
+          <button className="action-button" onClick={() => setShowAssignManufacturerModal(true)} style={{ marginLeft: "10px" }}>
+            Assign Manufacturer
+          </button>
 
-      <button onClick={() => setShowAssignCertifierModal(true)} style={{ marginLeft: "10px" }}>
-        Assign Certifier
-      </button>
+          <button className="action-button" onClick={() => setShowAssignDistributorModal(true)} style={{ marginLeft: "10px" }}>
+            Assign Distributor
+          </button>
 
-      <button onClick={() => setShowtransferOwnershipModal(true)} style={{ marginLeft: "10px" }}>
+          <button className="action-button" onClick={() => setShowAssignCertifierModal(true)} style={{ marginLeft: "10px" }}>
+            Assign Certifier
+          </button>
+        </>
+      )}
+
+      {role === "manufacturer" && (
+          <button className="action-button" onClick={() => setShowRegisterModal(true)} style={{ marginLeft: "10px" }}>
+            Register Product
+          </button>
+      )}
+
+      {role === "certifier" && (
+          <button className="action-button" onClick={() => setShowCertifyModal(true)} style={{ marginLeft: "10px" }}>
+            Certify Product Ownership
+          </button>
+      )}
+
+      <button id = "tpoBtn" className="action-button" style={{ animationDelay: "0.2s", marginLeft: "10px"}} onClick={() => setShowtransferOwnershipModal(true)}>
         Transfer Product Ownership
       </button>
 
-      <button onClick={() => setShowGetModal(true)} style={{ marginLeft: "10px" }}>
+      <button id = "upsBtn" className="action-button" style={{ animationDelay: "0.4s", marginLeft: "10px"}} onClick={() => setShowupdateStatusModal(true)}>
+        Update Product Status
+      </button>
+
+      <button id = "gpBtn" className="action-button" style={{ animationDelay: "0.6s", marginLeft: "10px"}} onClick={() => setShowGetModal(true)}>
         Get Product
       </button>
 
@@ -242,6 +323,20 @@ function App() {
         isOpen={showtransferOwnershipModal}
         onClose={() => setShowtransferOwnershipModal(false)}
         onSubmit={handletransferOwnership}
+      />
+
+      {/* Update Status Modal */}
+      <UpdateStatusModal
+        isOpen={showupdateStatusModal}
+        onClose={() => setShowupdateStatusModal(false)}
+        onSubmit={handleupdateStatus}
+      />
+
+      {/* Certify Product Ownership */}
+      <CertifyProductModal
+        isOpen={showCertifyModal}
+        onClose={() => setShowCertifyModal(false)}
+        onSubmit={handleCertify}
       />
 
       <p>{status}</p>

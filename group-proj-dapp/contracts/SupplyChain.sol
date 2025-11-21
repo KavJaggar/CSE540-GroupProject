@@ -123,7 +123,7 @@ contract SupplyChain{
     //lost somewhere along the way and requiring manual intervention to correct the information. emits an event stating which product was updated and what the status was updated to.
     function updateStatus(uint256 id, Status newStatus) external {
         Product storage p = products[id];
-        require(p.id != 0, "Product does not exist");
+        //require(p.id != 0, "Product does not exist");
         require(
             msg.sender == p.owner || msg.sender == admin,
             "Not authorized"
