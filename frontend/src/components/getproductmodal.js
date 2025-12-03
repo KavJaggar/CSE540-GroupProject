@@ -13,7 +13,7 @@ export default function GetProductModal({ isOpen, onClose, onSubmit }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Register Product</h2>
+        <h2>Get Product</h2>
 
         <div style={styles.field}>
           <label>Product ID</label>
