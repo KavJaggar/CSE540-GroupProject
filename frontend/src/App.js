@@ -29,6 +29,7 @@ function App() {
   const [role, setRole] = useState("");
 
   const statusTags = {"Unknown" : 1, "Ordered" : 2, "Shipped" : 3, "InStorage" : 4, "Delivered" : 5}
+  const statusTagsRev = {1 : "Unknown", 2 : "Ordered", 3 : "Shipped", 4 : "InStorage", 5 : "Delivered"}
 
   document.addEventListener("DOMContentLoaded", () => {
     const adminBtn = document.getElementById("adminButton");
@@ -107,8 +108,12 @@ function App() {
         data.productID  
       );
 
-      //await tx.wait();
-      showStatus("Product retrieved!\n Product: " + tx);
+      showStatus("Product retrieved!\n \n" + 
+          `ID:\n ${tx[0]}` +
+          // `Batch ID: ${tx[2]}\n` +
+          `\n\nMetadata:\n ${tx[3]}` +
+          `\n\nOwner: ${tx[1]}` +
+          `\n\nStatus:\n ${statusTagsRev[tx[4]]}`);
     } catch (err) {
       console.error(err);
       showStatus("Failed to get product : " + err);
@@ -191,11 +196,39 @@ function App() {
     try {
       const contract = await getContract();
 
-        const tx = await contract.transferOwnership(
-        data.productID, data.address  
-        );
-      
-      showStatus("Ownership of Product updated to " + data.address + "!")
+      const tx = await contract.transferOwnership(
+      data.productID, data.address  
+      );
+
+      const receipt = await tx.wait();
+
+      const parsedLogs = receipt.logs
+        .map((log) => {
+          try {
+            return contract.interface.parseLog(log);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      const event = parsedLogs.find((l) => l.name === "OwnershipTransferred");
+
+      if (!event) {
+        showStatus("Error: ProductCreated event not found.");
+        return;
+      }
+
+      const productId = event.args.id;
+      const from = event.args.from; 
+      const to = event.args.to;
+
+      showStatus(
+        `Product Transferred!\n\n` +
+          `ID: ${productId}\n\n` +
+          `Transferred From: ${from}\n\n` +
+          `Transferred To: ${to}`
+      );
     } catch (err) {
       console.error(err);
       showStatus("Failed to transfer ownership. Make sure you own the product you are trying to transfer.");
@@ -210,7 +243,7 @@ function App() {
         data.productID, statusTags[data.status]
         );
       
-      showStatus("Status of Product updated to " + data.status + "!")
+      showStatus("Status of Product " + data.productID + " updated to " + data.status + "!")
     } catch (err) {
       console.error(err);
       showStatus("Failed to Update Status. Make sure you own the product you are trying to update. : " + err);

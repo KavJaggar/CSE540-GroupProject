@@ -14,7 +14,7 @@ export default function UpdateStatus({ isOpen, onClose, onSubmit }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Transfer Ownership of Product</h2>
+        <h2>Update Status of Product</h2>
 
         {/* {box to enter id} */}
         <div style={styles.field}>

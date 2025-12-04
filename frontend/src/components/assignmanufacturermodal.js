@@ -14,7 +14,7 @@ export default function AssignManufacturerModal({ isOpen, onClose, onSubmit }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Register Product</h2>
+        <h2>Assign Distributor</h2>
 
         {/* {box to enter address} */}
         <div style={styles.field}>

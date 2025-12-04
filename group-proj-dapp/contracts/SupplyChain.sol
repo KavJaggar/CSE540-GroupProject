@@ -9,7 +9,7 @@ pragma solidity ^0.8.0;
 contract SupplyChain{
 
     //This enum lists all of the different possible status tags that a product can have at any point along the supply chain
-    enum Status { Unknown, Ordered, Shipped, InStorage, Delivered } 
+    enum Status { Unknown, Ordered, Shipped, InStorage, Delivered, Temp} 
 
     //Product struct storing all of the different notable attributes of a product while in the supply chain
     struct Product {
