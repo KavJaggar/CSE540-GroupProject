@@ -1,5 +1,12 @@
 import { ethers } from "ethers";
 import fs from "fs";
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+
+const db = await open({
+  filename: './events.db',
+  driver: sqlite3.Database
+});
 
 const provider = new ethers.JsonRpcProvider("http://localhost:8545");
 
@@ -26,5 +33,19 @@ contract.on("StatusUpdated", async (id, status, event) => {
     console.log(`Metadata URI: ${tx.metadataUri}`);
     console.log(`Status: ${statusTagsRev[tx.status]}`);
 
+    await db.run(
+        `INSERT OR REPLACE INTO products (id, owner, batchId, metadataUri, status, createdAt)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        tx.id,
+        tx.owner,
+        tx.batchId,
+        tx.metadataUri,
+        'Delivered',
+        tx.createdAt
+    );
+
+    console.log("Inserted into database:", tx.id);
     console.log("-------------------------------------");
+
+
 });
