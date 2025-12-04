@@ -8,6 +8,8 @@ import AssignCertifierModal from "./components/assigncertifiermodal.js";
 import TransferOwnershipModal from "./components/transferownershipmodal.js";
 import UpdateStatusModal from "./components/updatestatusmodal.js";
 import CertifyProductModal from "./components/certifyproductmodal.js";
+import StatusModal from "./components/statusmodal.js";
+import { toBigInt } from "ethers";
 
 
 function App() {
@@ -20,6 +22,9 @@ function App() {
   const [showtransferOwnershipModal, setShowtransferOwnershipModal] = useState(false);
   const [showupdateStatusModal, setShowupdateStatusModal] = useState(false);
   const [showCertifyModal, setShowCertifyModal] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+
 
   const [role, setRole] = useState("");
 
@@ -41,10 +46,10 @@ function App() {
     try {
       const contract = await getContract();
       const adminAddress = await contract.admin(); 
-      alert("Contract admin: " + adminAddress);
+      showStatus("The Contract admin is: " + adminAddress);
     } catch (err) {
       console.error(err);
-      alert("Error calling contract: " + err.message);
+      showStatus("Error calling contract: " + err.message);
     }
   }
 
@@ -57,11 +62,40 @@ function App() {
         data.metadata   
       );
 
-      await tx.wait();
-      alert("Product registered!");
+      const receipt = await tx.wait();
+
+      const parsedLogs = receipt.logs
+        .map((log) => {
+          try {
+            return contract.interface.parseLog(log);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      const event = parsedLogs.find((l) => l.name === "ProductCreated");
+
+      if (!event) {
+        showStatus("Error: ProductCreated event not found.");
+        return;
+      }
+
+      const productId = event.args.id;
+      const batchId = event.args.batchId; 
+      const metadata = event.args.metadata;
+
+      showStatus(
+        `Product registered!\n` +
+          `ID: ${productId}\n` +
+          `Batch ID: ${batchId}\n` +
+          `Metadata: ${metadata}`
+      );
+
     } catch (err) {
       console.error(err);
-      alert("Failed to register product : Only Manufacturers can resgiter products!");
+      showStatus("Failed!");
+      
     }
   };
 
@@ -74,10 +108,10 @@ function App() {
       );
 
       //await tx.wait();
-      alert("Product retrieved!\n Product: " + tx);
+      showStatus("Product retrieved!\n Product: " + tx);
     } catch (err) {
       console.error(err);
-      alert("Failed to get product : " + err);
+      showStatus("Failed to get product : " + err);
     }
   };
 
@@ -98,10 +132,10 @@ function App() {
         );
       }
       
-      alert("Manufacturer Status updated for " + data.address + "!")
+      showStatus("Manufacturer Status updated for " + data.address + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to get product");
+      showStatus("Failed to get product");
     }
   };
 
@@ -122,10 +156,10 @@ function App() {
         );
       }
       
-      alert("Distributor Status updated for " + data.address + "!")
+      showStatus("Distributor Status updated for " + data.address + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to get product");
+      showStatus("Failed to get product");
     }
   };
 
@@ -146,10 +180,10 @@ function App() {
         );
       }
       
-      alert("Certifier Status updated for " + data.address + "!")
+      showStatus("Certifier Status updated for " + data.address + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to get product");
+      showStatus("Failed to get product");
     }
   };
 
@@ -161,10 +195,10 @@ function App() {
         data.productID, data.address  
         );
       
-      alert("Ownership of Product updated to " + data.address + "!")
+      showStatus("Ownership of Product updated to " + data.address + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to transfer ownership. Make sure you own the product you are trying to transfer.");
+      showStatus("Failed to transfer ownership. Make sure you own the product you are trying to transfer.");
     }
   };
 
@@ -176,10 +210,10 @@ function App() {
         data.productID, statusTags[data.status]
         );
       
-      alert("Status of Product updated to " + data.status + "!")
+      showStatus("Status of Product updated to " + data.status + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to Update Status. Make sure you own the product you are trying to update. : " + err);
+      showStatus("Failed to Update Status. Make sure you own the product you are trying to update. : " + err);
     }
   };
 
@@ -191,12 +225,18 @@ function App() {
         data.productID, data.address
         );
       
-      alert("Ownership of the product on the chain is verified to belong to: " + data.address + "!")
+      showStatus("Ownership of the product on the chain is verified to belong to: " + data.address + "!")
     } catch (err) {
       console.error(err);
-      alert("Failed to verify ownership of Product to address: " + data.address);
+      showStatus("Failed to verify ownership of Product to address: " + data.address);
     }
   };
+
+  function showStatus(message) {
+    setStatusMessage(message);
+    setStatusModalOpen(true);
+  }
+
 
 
   // async function assignManufacturer() {
@@ -337,6 +377,13 @@ function App() {
         isOpen={showCertifyModal}
         onClose={() => setShowCertifyModal(false)}
         onSubmit={handleCertify}
+      />
+
+      {/* Status Message */}
+      <StatusModal
+        isOpen={statusModalOpen}
+        message={statusMessage}
+        onClose={() => setStatusModalOpen(false)}
       />
 
       <p>{status}</p>

@@ -40,7 +40,7 @@ contract SupplyChain{
 
     //sets up the three events that will be emitted. one for a product being created. one for the ownership of a product being transferred to someone else along
     //the supply chain. and one for the status of the product being updated to one in the status enum declared above.
-    event ProductCreated(uint256 indexed id, address indexed owner, string batchId);
+    event ProductCreated(uint256 indexed id, address indexed owner, string batchId, string metadata);
     event OwnershipTransferred(uint256 indexed id, address indexed from, address indexed to);
     event StatusUpdated(uint256 indexed id, Status status);
 
@@ -105,7 +105,7 @@ contract SupplyChain{
             status: Status.Ordered,
             createdAt: block.timestamp
         });
-        emit ProductCreated(id, msg.sender, batchId);
+        emit ProductCreated(id, msg.sender, batchId, metadataUri);
         return id;
     }
 
