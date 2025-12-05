@@ -26,7 +26,7 @@ export default function RegisterProductModal({ isOpen, onClose, onSubmit }) {
         </div>
 
         <div style={styles.field}>
-          <label>Metadata String</label>
+          <label>Metadata String: (Product Name, Company, Industry, Price)</label>
           <input
             type="text"
             value={metadata}

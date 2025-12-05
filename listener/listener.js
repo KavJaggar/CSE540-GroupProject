@@ -22,9 +22,7 @@ const statusTagsRev = {1 : "Unknown", 2 : "Ordered", 3 : "Shipped", 4 : "InStora
 
 //Listen forever for ONLY status changes
 contract.on("StatusUpdated", async (id, status, event) => {
-
     const tx = await contract.getProduct(id);  
-
     console.log("New StatusUpdated Event Detected!\n");
 
     console.log(`ID: ${tx.id}`);
@@ -32,7 +30,6 @@ contract.on("StatusUpdated", async (id, status, event) => {
     console.log(`Batch ID: ${tx.batchId}`);
     console.log(`Metadata URI: ${tx.metadataUri}`);
     console.log(`Status: ${statusTagsRev[tx.status]}`);
-
     await db.run(
         `INSERT OR REPLACE INTO products (id, owner, batchId, metadataUri, status, createdAt)
          VALUES (?, ?, ?, ?, ?, ?)`,
@@ -43,9 +40,6 @@ contract.on("StatusUpdated", async (id, status, event) => {
         'Delivered',
         tx.createdAt
     );
-
     console.log("Inserted into database:", tx.id);
     console.log("-------------------------------------");
-
-
 });
