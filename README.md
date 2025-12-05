@@ -38,7 +38,7 @@ _____________________________________
 ____________________________________
 - Open a new terminal and navigate to the listener folder
 - npm install
-- npm start
+- node listener.js
 - This will run the listener script and start storing the data.
 
 ## For grader :
