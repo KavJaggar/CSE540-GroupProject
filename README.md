@@ -12,9 +12,9 @@ This project implements a blockchain-based supply chain provenance system using 
 - Run:
     - npm install
     - npx hardhat compile
-- If the last setp (npx hardhat install) works without error, then all of the needed dependencies should be installed and setup as needed now.
+- If the last step (npx hardhat install) works without error, then all of the needed dependencies should be installed and set up as needed now.
 
-## How to deploy (TO CHANGE AS PROJECT DEVELOPMENT CONTINUES):
+## How to deploy:
 - Start a local test blockchain by running:
     - npx hardhat node
 - Open a new terminal instance and run:
@@ -23,9 +23,26 @@ This project implements a blockchain-based supply chain provenance system using 
 - Then Run:
     - npx hardhat console --network localhost
 - You should now be able to interact with it in the console!
+_____________________________________
+- Open a new terminal and navigate to the frontend folder.
+- Update the CONTRACT_ADDRESS field in contract.js to the outputted address of the contract from "npx hardhat run scripts/deploy.js --network localhost".
+- npm install
+- npm start
+- This will run the react app and provide you with a link to access it in your browser.
+- Once you have done this, install the MetaMask Chrome extension from the Chrome WebStore.
+- Create an account and sign in.
+- Click on the extension and navigate to the accounts menu.
+- Click "Add Wallet" -> "Import an Account" -> Enter your Private Key from the "npx hardhat node" output.
+- If you want to be the admin, enter the first account's private key.
+- After completing this, select "Add Custom Network" and fill out the details based on the "npx hardhat node" output.
+____________________________________
+- Open a new terminal and navigate to the listener folder
+- npm install
+- npm start
+- This will run the listener script and start storing the data.
 
 ## For grader :
-The contract interface and draft contract with some implemented function code is avalable in:
+The contract interface and draft contract with the implemented function code is avalable in:
 - group-project-dapp/contracts/ISupplyChain.sol
 - group-project-dapp/contracts/SupplyChain.sol
 
