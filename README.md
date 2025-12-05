@@ -37,6 +37,7 @@ _____________________________________
 - After completing this, select "Add Custom Network" and fill out the details based on the "npx hardhat node" output.
 ____________________________________
 - Open a new terminal and navigate to the listener folder
+- Update contract address in listener.js
 - npm install
 - node listener.js
 - This will run the listener script and start storing the data.
