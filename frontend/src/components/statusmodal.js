@@ -26,7 +26,7 @@ const styles = {
     alignItems: "center",
   },
   modal: {
-    width: "350px",
+    width: "750px",
     maxWidth: "90%",        
     padding: "20px",
     borderRadius: "10px",

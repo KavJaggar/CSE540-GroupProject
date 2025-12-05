@@ -14,7 +14,7 @@ export default function CertifyProductModal({ isOpen, onClose, onSubmit }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Certify Product's Ownership</h2>
+        <h2>Verify Product's History</h2>
 
         {/* {box to enter id} */}
         <div style={styles.field}>
@@ -26,7 +26,7 @@ export default function CertifyProductModal({ isOpen, onClose, onSubmit }) {
           />
         </div>
 
-        {/* {box to enter address} */}
+        {/* {box to enter address}
         <div style={styles.field}>
           <label>Owner Address</label>
           <input
@@ -34,7 +34,7 @@ export default function CertifyProductModal({ isOpen, onClose, onSubmit }) {
             value={address}
             onChange={(e) => setaddress(e.target.value)}
           />
-        </div>
+        </div> */}
 
         <div style={styles.buttons}>
           <button onClick={onClose}>Cancel</button>

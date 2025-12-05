@@ -43,6 +43,62 @@ function App() {
     certifierBtn.onclick = () => setRole("certifier");
 });
 
+ async function formatEvent(e) {
+  if (!e.fragment) return "Unknown event.";
+
+  const name = e.fragment.name;
+  const args = e.args;
+
+  const tx = await e.getTransaction();
+  const sender = tx.from;
+
+  if (name === "ProductCreated") {
+    return `Product Created:
+      Sender: ${sender}
+      ID: ${args[0]}
+      Owner: ${args[1]}
+      Batch ID: ${args[2]}
+      Metadata: ${args[3]}`;
+  }
+
+  if (name === "OwnershipTransferred") {
+    return `Ownership Transferred:
+      Sender: ${sender}
+      From: ${args[1]}
+      To: ${args[2]}`;
+  }
+
+  if (name === "StatusUpdated") {
+    return `Status Updated:
+      Sender: ${sender}
+      New Status: ${statusTagsRev[args[1]]}`;
+  }
+
+  return `Unknown event (sender: ${sender})`;
+}
+
+async function getProductHistory(productId) {
+  const contract = await getContract();
+
+  const filterProductCreated = contract.filters.ProductCreated([productId]);
+  const filterOwnershipTransferred = contract.filters.OwnershipTransferred([productId]);
+  const filterStatusUpdated = contract.filters.StatusUpdated([productId]);
+
+  const createdEvents = await contract.queryFilter(filterProductCreated);
+  const ownershipEvents = await contract.queryFilter(filterOwnershipTransferred);
+  const statusEvents = await contract.queryFilter(filterStatusUpdated);
+
+  const allEvents = [
+    ...createdEvents,
+    ...ownershipEvents,
+    ...statusEvents
+  ];
+
+  allEvents.sort((a, b) => a.blockNumber - b.blockNumber);
+  return allEvents;
+}
+
+
   async function getAdmin() {
     try {
       const contract = await getContract();
@@ -251,19 +307,31 @@ function App() {
   };
 
   const handleCertify = async (data) => {
-    try {
-      const contract = await getContract();
+  try {
+    const productId = data.productID;
+    const events = await getProductHistory(productId);
 
-        const tx = await contract.certifyProduct(
-        data.productID, data.address
-        );
-      
-      showStatus("Ownership of the product on the chain is verified to belong to: " + data.address + "!")
-    } catch (err) {
-      console.error(err);
-      showStatus("Failed to verify ownership of Product to address: " + data.address);
+    if (events.length === 0) {
+      showStatus("No events found for this product.");
+      return;
     }
-  };
+
+    let historyText = `Transaction History for Product ${productId}:\n\n`;
+
+    for (const e of events) {
+      console.log("Event:", e.fragment?.name, "Args:", e.args);
+    }
+
+    for (const e of events) {
+      historyText += await formatEvent(e) + "\n----------------------\n";
+    }
+
+    showStatus(historyText);  
+  } catch (err) {
+    console.error(err);
+    showStatus("Failed to fetch product history.");
+  }
+};
 
   function showStatus(message) {
     setStatusMessage(message);
@@ -340,7 +408,7 @@ function App() {
 
       {role === "certifier" && (
           <button className="action-button" onClick={() => setShowCertifyModal(true)} style={{ marginLeft: "10px" }}>
-            Certify Product Ownership
+            Verify Product History
           </button>
       )}
 
