@@ -90,11 +90,12 @@ contract SupplyChain{
         distributors[_addr] = _ok;
         retailers[_addr] = _ok;
         
-        
+
     }
 
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters
     //and then returns the id of the product that was just registered
+    //ensure product is registereed
     function registerProduct(string calldata batchId, string calldata metadataUri) external onlyManufacturer returns (uint256)
     {
         uint256 id = nextId++;
