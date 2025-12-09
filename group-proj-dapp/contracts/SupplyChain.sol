@@ -90,6 +90,7 @@ contract SupplyChain{
         distributors[_addr] = _ok;
         retailers[_addr] = _ok;
         
+        
     }
 
     //function allowing only manufacturers to register products. the function registers the product based on the provided parameters
